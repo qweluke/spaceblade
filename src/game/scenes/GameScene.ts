@@ -353,6 +353,7 @@ export class GameScene extends Phaser.Scene {
         }
     }
 
+    
     /**
      * Tworzy bossa na podstawie konfiguracji.
      */
