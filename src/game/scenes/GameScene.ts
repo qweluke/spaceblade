@@ -317,12 +317,12 @@ export class GameScene extends Phaser.Scene {
         console.log(`Rozpoczynam poziom ${this.levelData.level}`);
         this.enemiesLeftInGame = 0; // Resetujemy licznik
 
-        if (this.levelData.type === "wave" && this.levelData.waves) {
+        if (this.levelData.type === "wave") {
             this.levelData.waves.forEach((wave) => {
                 this.enemiesLeftInGame += wave.count;
                 this.spawnWave(wave);
             });
-        } else if (this.levelData.type === "boss" && this.levelData.boss) {
+        } else if (this.levelData.type === "boss") {
             this.enemiesLeftInGame = 1;
             this.spawnBoss(this.levelData.boss);
         }
@@ -338,6 +338,7 @@ export class GameScene extends Phaser.Scene {
         for (let i = 0; i < waveConfig.count; i++) {
             const enemy = this.enemies.get(0, 0, waveConfig.enemyType) as Enemy;
             if (enemy) {
+                enemy.setType('wave');
                 enemy.setActive(true).setVisible(true);
                 enemy.setStats(waveConfig.health, waveConfig.points);
                 enemy.followPath(
@@ -353,28 +354,41 @@ export class GameScene extends Phaser.Scene {
         }
     }
 
-    
+
     /**
      * Tworzy bossa na podstawie konfiguracji.
      */
-    private spawnBoss(bossConfig: GameBoss) {
+private spawnBoss(bossConfig: GameBoss) {
         const path = this.paths.get(bossConfig.pathKey);
         if (!path) return;
 
         const boss = this.enemies.get(0, 0, bossConfig.enemyType) as Enemy;
         if (boss) {
+            boss.setType('boss');
             boss.setActive(true).setVisible(true);
             boss.setStats(bossConfig.health, bossConfig.points);
-            boss.setScale(2.5); // Boss jest większy
+            boss.setScale(2.5);
+            
             boss.followPath(path, bossConfig.duration, 0);
 
-            // Boss nie dolatuje do "formacji", tylko od razu jest gotowy
-            boss.once(
-                "pathComplete",
-                (b: Enemy) => b.emit("inFormation", b),
-                this,
-            ); // Udajemy, że dotarł do formacji
-            boss.once("enemyKilled", this.onEnemyKilled, this);
+            // --- POPRAWKA 2: ZMIEŃ LOGIKĘ 'pathComplete' ---
+            // Zamiast udawać 'inFormation', każemy mu się zatrzymać
+            // i FAKTYCZNIE ustawić w pozycji końcowej.
+            boss.once('pathComplete', (bossEnemy: Enemy) => {
+                
+                // Ustaw jego "dom" (formationSlot) na pozycję końcową ścieżki
+                const endOfPath = path.getEndPoint();
+                bossEnemy.formationSlot.set(endOfPath.x, endOfPath.y);
+                
+                // Ustaw go w tryb "w formacji" (czyli "siedzi w miejscu")
+                bossEnemy.currentState = 'inFormation';
+                bossEnemy.setRotation(0); // Wyprostuj go
+                
+                // Powiadom scenę, że jest gotowy (na wypadek)
+                bossEnemy.emit('inFormation', bossEnemy);
+            });
+
+            boss.once('enemyKilled', this.onEnemyKilled, this);
         }
     }
 
@@ -467,13 +481,15 @@ export class GameScene extends Phaser.Scene {
      * Wywoływana przez zegar, by wybrać wroga do ataku.
      */
     private triggerEnemyAttack() {
-        const availableEnemies = this.enemies
-            .getChildren()
-            .filter((e) => (e as Enemy).isInFormation);
+        // --- POPRAWKA 3: ZAKTUALIZUJ FILTR ---
+        const availableEnemies = this.enemies.getChildren().filter(e => {
+            const enemy = e as Enemy;
+            // Wybieraj tylko wrogów W FORMACJI i NIE BĘDĄCYCH bossem
+            return enemy.isInFormation && enemy.type !== 'boss';
+        });
+
         if (availableEnemies.length > 0) {
-            const attacker = Phaser.Utils.Array.GetRandom(
-                availableEnemies,
-            ) as Enemy;
+            const attacker = Phaser.Utils.Array.GetRandom(availableEnemies) as Enemy;
             attacker.startAttackRun(this.player);
         }
     }

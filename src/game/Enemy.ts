@@ -20,8 +20,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     // Statystyki
     private health: number = 1;
     private pointsValue: number = 100;
+    public  type: 'wave' | 'boss' = 'wave'
     
-    // Skrót do sceny dla wygody (rzutowanie typu)
     private gameScene: Phaser.Scene; // Możesz tu użyć 'GameScene' jeśli ją zaimportujesz
 
     // --- Metody Główne ---
@@ -43,6 +43,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.pointsValue = points || 100;
     }
 
+
+    public setType(type: 'wave' | 'boss'): void {
+        this.type = type;
+    }
     /**
      * Zwraca, czy wróg jest "zaparkowany" w formacji.
      */

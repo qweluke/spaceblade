@@ -18,7 +18,7 @@ export class PlayerBullet extends Physics.Arcade.Sprite {
         this.setActive(true);
         this.setVisible(true);
 
-        this.setCollideWorldBounds(true); 
+        // this.setCollideWorldBounds(true); 
         
     }
     
