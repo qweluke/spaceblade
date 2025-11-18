@@ -5,8 +5,6 @@ type EnemyState = 'spawning' | 'inFormation' | 'attacking' | 'returning' | 'dead
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
-    // --- Właściwości Klasy ---
-
     
     // Ścieżki i ruch
     private path!: Phaser.Curves.Path;
@@ -38,9 +36,11 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     /**
      * Ustawia statystyki wroga (wywoływane przez GameScene).
      */
-    public setStats(health: number, points: number): void {
+    public setStats(health: number, points: number): this {
         this.health = health || 1;
         this.pointsValue = points || 100;
+
+        return this
     }
 
 
@@ -67,9 +67,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.body!.reset(this.pathFollower.vec.x, this.pathFollower.vec.y);
 
         // Zatrzymujemy stary tween, jeśli jakiś istniał
-        if (this.pathTween) {
-            this.pathTween.stop();
-        }
+        if (this.pathTween) this.pathTween.stop()
 
         this.pathTween = this.scene.tweens.add({
             targets: this.pathFollower,
@@ -77,21 +75,22 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
             ease: 'Linear',
             duration: duration,
             delay: delay,
-            onUpdate: () => {
-                if (!this.active) return; // Przestań, jeśli wróg zginął w trakcie
-                
-                // Aktualizuj pozycję
-                this.path.getPoint(this.pathFollower.t, this.pathFollower.vec);
-                this.setPosition(this.pathFollower.vec.x, this.pathFollower.vec.y);
-                
-                // Aktualizuj rotację
-                const tangent = this.path.getTangent(this.pathFollower.t);
-                this.setRotation(tangent.angle() + Math.PI / 2); // +PI/2 jeśli sprite patrzy w górę
-            },
-            onComplete: () => {
-                this.onPathComplete();
-            }
+            onUpdate: this.onPathUpdate.bind(this),
+            onComplete: this.onPathComplete.bind(this)
         });
+    }
+
+
+    private onPathUpdate = () => {
+        if (!this.active) return; // Przestań, jeśli wróg zginął w trakcie
+        
+        // Aktualizuj pozycję
+        this.path.getPoint(this.pathFollower.t, this.pathFollower.vec);
+        this.setPosition(this.pathFollower.vec.x, this.pathFollower.vec.y);
+        
+        // Aktualizuj rotację
+        const tangent = this.path.getTangent(this.pathFollower.t);
+        this.setRotation(tangent.angle() + Math.PI / 2); // +PI/2 jeśli sprite patrzy w górę
     }
 
     /**
