@@ -40,6 +40,8 @@ export class GameScene extends Phaser.Scene {
         this.load.image('playerTexture', 'player1.png')
         this.load.image('borderTexture', 'border.png')
         this.load.image('bulletTexture', 'bullet.png')
+        this.load.image('starsATexture', 'stars-A.png')
+        this.load.image('starsBTexture', 'stars-B.png')
         this.load.image('enemy_blue', 'enemy1.png')
         this.load.image('enemy_green', 'enemy2.png')
         this.load.image('boss_mothership', 'mothership.png')
@@ -65,6 +67,7 @@ export class GameScene extends Phaser.Scene {
 
         // Create game objects
         this.uiManager.createBorders()
+        this.uiManager.createStars()
         this.uiManager.createHUD(this.score, this.playerLives)
         this.formationManager.createSlots()
         this.playerManager.create()
@@ -95,7 +98,7 @@ export class GameScene extends Phaser.Scene {
 
         this.playerManager.update(time)
         this.formationManager.updateSway(time, this.enemyManager.getEnemies())
-        this.uiManager.animateBorders()
+        this.uiManager.animate()
     }
 
     private setupPhysicsWorld(): void {

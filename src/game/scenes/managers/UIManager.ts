@@ -5,6 +5,8 @@ export class UIManager {
     private scene: Phaser.Scene
     private leftBorder!: Phaser.GameObjects.TileSprite
     private rightBorder!: Phaser.GameObjects.TileSprite
+    private starsA!: Phaser.GameObjects.TileSprite
+    private starsB!: Phaser.GameObjects.TileSprite
     private scoreText!: Phaser.GameObjects.Text
     private livesText!: Phaser.GameObjects.Text
 
@@ -17,27 +19,44 @@ export class UIManager {
         const gameHeight = this.scene.sys.game.config.height as number
         const borderWidth = GameConstants.BORDER_WIDTH
 
-        this.leftBorder = this.scene.add.tileSprite(
-            borderWidth / 2,
-            gameHeight / 2,
-            borderWidth,
-            gameHeight,
-            'borderTexture'
-        )
+        this.leftBorder = this.scene.add
+            .tileSprite(borderWidth / 2, gameHeight / 2, borderWidth, gameHeight, 'borderTexture')
+            .setDepth(2) // keep above stars
 
-        this.rightBorder = this.scene.add.tileSprite(
-            gameWidth - borderWidth / 2,
-            gameHeight / 2,
-            borderWidth,
-            gameHeight,
-            'borderTexture'
-        )
+        this.rightBorder = this.scene.add
+            .tileSprite(gameWidth - borderWidth / 2, gameHeight / 2, borderWidth, gameHeight, 'borderTexture')
+            .setDepth(2) // keep above stars
         this.rightBorder.setFlipX(true)
     }
 
-    animateBorders(): void {
+    createStars(): void {
+        const gameWidth = this.scene.sys.game.config.width as number
+        const gameHeight = this.scene.sys.game.config.height as number
+
+        // Make starsA and starsB start at (0,0) and cover full game width and height
+        this.starsA = this.scene.add.tileSprite(0, 0, gameWidth, gameHeight, 'starsATexture').setOrigin(0, 0)
+        this.starsB = this.scene.add.tileSprite(0, 0, gameWidth, gameHeight, 'starsBTexture').setOrigin(0, 0)
+    }
+
+    private animateBorders(): void {
         this.leftBorder.tilePositionY -= GameConstants.BORDER_SCROLL_SPEED
         this.rightBorder.tilePositionY -= GameConstants.BORDER_SCROLL_SPEED
+    }
+
+    private animateStars(): void {
+        // Give nice parallax effect to the starsA and starsB tileSprites
+        // We'll scroll starsA slowly, and starsB faster for a layered effect.
+        if (this.starsA) {
+            this.starsA.tilePositionY -= GameConstants.STARS_SCROLL_SPEED_A || 0.15
+        }
+        if (this.starsB) {
+            this.starsB.tilePositionY -= GameConstants.STARS_SCROLL_SPEED_B || 0.35
+        }
+    }
+
+    animate(): void {
+        this.animateBorders()
+        this.animateStars()
     }
 
     createHUD(initialScore: number, initialLives: number): void {
@@ -50,10 +69,12 @@ export class UIManager {
             fontSize,
             color,
         })
+        .setDepth(1002)
 
         this.livesText = this.scene.add
             .text(gameWidth - padding, padding, `Lives: ${initialLives}`, { fontSize, color })
             .setOrigin(1, 0)
+            .setDepth(1002)
     }
 
     updateScore(score: number): void {

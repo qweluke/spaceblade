@@ -21,6 +21,8 @@ export class GameConstants {
     // UI
     static readonly BORDER_WIDTH = 50
     static readonly BORDER_SCROLL_SPEED = 1
+    static readonly STARS_SCROLL_SPEED_A = 1.2 // front stars
+    static readonly STARS_SCROLL_SPEED_B = 0.8 // foreground stars
     static readonly HUD_PADDING = 16
     static readonly HUD_FONT_SIZE = '24px'
     static readonly HUD_COLOR = '#ffffff'
