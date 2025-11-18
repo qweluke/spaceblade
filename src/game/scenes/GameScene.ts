@@ -178,10 +178,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     private gameOver(): void {
-        this.playerManager.deactivate()
-        this.enemyManager.stopAttackTimer()
-        this.scene.pause()
-        this.uiManager.showGameOverText()
+        this.scene.launch('GameOver')
     }
 
     private pauseGame(): void {

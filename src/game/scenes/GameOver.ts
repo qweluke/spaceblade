@@ -2,23 +2,24 @@ import { EventBus } from '../EventBus'
 import { Scene } from 'phaser'
 
 export class GameOver extends Scene {
-    camera: Phaser.Cameras.Scene2D.Camera
-    background: Phaser.GameObjects.Image
     gameOverText: Phaser.GameObjects.Text
+    restartButton: Phaser.GameObjects.Text
 
     constructor() {
         super('GameOver')
     }
 
     create() {
-        this.camera = this.cameras.main
-        this.camera.setBackgroundColor(0xff0000)
+        const gameWidth = this.sys.game.config.width as number
+        const gameHeight = this.sys.game.config.height as number
 
-        this.background = this.add.image(512, 384, 'background')
-        this.background.setAlpha(0.5)
+        // Create semi-transparent overlay
+        const overlay = this.add.rectangle(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 0x000000, 0.7)
+        overlay.setDepth(1000)
+
 
         this.gameOverText = this.add
-            .text(512, 384, 'Game Over', {
+            .text(512, 300, 'Game Over', {
                 fontFamily: 'Arial Black',
                 fontSize: 64,
                 color: '#ffffff',
@@ -27,9 +28,39 @@ export class GameOver extends Scene {
                 align: 'center',
             })
             .setOrigin(0.5)
-            .setDepth(100)
+            .setDepth(1001)
 
+        this.restartButton = this.add
+            .text(512, 450, 'Restart', {
+                fontFamily: 'Arial Black',
+                fontSize: 32,
+                color: '#00ff00',
+                stroke: '#000000',
+                strokeThickness: 6,
+                align: 'center',
+            })
+            .setOrigin(0.5)
+            .setDepth(1001)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => this.restartGame())
+            .on('pointerover', () => {
+                this.restartButton.setStyle({ color: '#ffff00' })
+            })
+            .on('pointerout', () => {
+                this.restartButton.setStyle({ color: '#00ff00' })
+            })
+
+            const gameScene = this.scene.get('GameScene')
+            if (gameScene && gameScene.scene.isActive()) {
+                gameScene.scene.pause()
+            }
+            
         EventBus.emit('current-scene-ready', this)
+    }
+
+    private restartGame(): void {
+        // Start GameScene from level 1 (levelIndex: 0)
+        this.scene.start('GameScene', { levelIndex: 0 })
     }
 
     changeScene() {
