@@ -6,6 +6,7 @@ export class MainMenu extends Scene {
     background: GameObjects.Image
     logo: GameObjects.Image
     title: GameObjects.Text
+    startButton: GameObjects.Text
     logoTween: Phaser.Tweens.Tween | null
 
     constructor() {
@@ -28,6 +29,26 @@ export class MainMenu extends Scene {
             })
             .setOrigin(0.5)
             .setDepth(100)
+
+        this.startButton = this.add
+            .text(512, 520, 'Start Game', {
+                fontFamily: 'Arial Black',
+                fontSize: 32,
+                color: '#00ff00',
+                stroke: '#000000',
+                strokeThickness: 6,
+                align: 'center',
+            })
+            .setOrigin(0.5)
+            .setDepth(100)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', this.changeScene.bind(this))
+            .on('pointerover', () => {
+                this.startButton.setStyle({ color: '#ffff00' })
+            })
+            .on('pointerout', () => {
+                this.startButton.setStyle({ color: '#00ff00' })
+            })
 
         EventBus.emit('current-scene-ready', this)
     }
