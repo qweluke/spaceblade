@@ -1,7 +1,6 @@
 import { Scene } from 'phaser'
 
 export class PauseScene extends Scene {
-    private pausedText!: Phaser.GameObjects.Text
     private escKey!: Phaser.Input.Keyboard.Key
     private restartButton: Phaser.GameObjects.Text
     private quitButton: Phaser.GameObjects.Text
@@ -14,12 +13,11 @@ export class PauseScene extends Scene {
         const gameWidth = this.sys.game.config.width as number
         const gameHeight = this.sys.game.config.height as number
 
-        // Create semi-transparent overlay
         const overlay = this.add.rectangle(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight, 0x000000, 0.7)
         overlay.setDepth(1000)
 
         // Create PAUSED text
-        this.pausedText = this.add
+        this.add
             .text(gameWidth / 2, gameHeight / 2, 'PAUSED', {
                 fontFamily: 'Arial Black',
                 fontSize: '64px',
@@ -87,14 +85,14 @@ export class PauseScene extends Scene {
     }
 
     private quitGame(): void {
-        const gameScene = this.scene.get('GameScene');
+        const gameScene = this.scene.get('GameScene')
         if (gameScene) {
             if (gameScene.children) {
-                gameScene.children.removeAll(true); 
+                gameScene.children.removeAll(true)
             }
-            gameScene.scene.stop();
+            gameScene.scene.stop()
         }
-        this.scene.start('MainMenu');
+        this.scene.start('MainMenu')
     }
 
     private resumeGame(): void {
