@@ -22,7 +22,6 @@ export class GameScene extends Phaser.Scene {
     private score: number = GameConstants.INITIAL_SCORE
     private playerLives: number = GameConstants.INITIAL_LIVES
     private enemiesLeftInGame: number = 0
-    private isPaused: boolean = false
     private escKey!: Phaser.Input.Keyboard.Key
 
     constructor() {
@@ -81,16 +80,16 @@ export class GameScene extends Phaser.Scene {
             () => this.onPlayerHit()
         )
 
-        // Setup pause/resume with ESC key
+        // Setup pause with ESC key
         this.escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
-        this.escKey.on('down', () => this.togglePause())
+        this.escKey.on('down', () => this.pauseGame())
 
         // Start level
         this.startLevel()
     }
 
-    update(time: number, delta: number) {
-        if (this.isPaused || !this.playerManager.getPlayer().active) {
+    update(time: number, _delta: number) {
+        if (!this.playerManager.getPlayer().active) {
             return
         }
 
@@ -185,27 +184,19 @@ export class GameScene extends Phaser.Scene {
         this.uiManager.showGameOverText()
     }
 
-    private togglePause(): void {
+    private pauseGame(): void {
         // Don't allow pausing if game is over or player is inactive
         if (!this.playerManager.getPlayer().active) {
             return
         }
 
-        this.isPaused = !this.isPaused
-
-        if (this.isPaused) {
-            // Pause physics, timers, and tweens
-            this.physics.pause()
-            this.time.paused = true
-            this.tweens.pauseAll()
-            this.uiManager.showPausedText()
-        } else {
-            // Resume physics, timers, and tweens
-            this.physics.resume()
-            this.time.paused = false
-            this.tweens.resumeAll()
-            this.uiManager.hidePausedText()
+        // Don't pause if already paused
+        if (this.scene.isPaused()) {
+            return
         }
+
+        // Launch PauseScene which will handle pausing this scene
+        this.scene.launch('PauseScene')
     }
 
     changeScene() {

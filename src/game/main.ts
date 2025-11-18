@@ -2,6 +2,7 @@ import { Boot } from './scenes/Boot'
 import { GameOver } from './scenes/GameOver'
 import { GameScene as MainGame } from './scenes/GameScene'
 import { MainMenu } from './scenes/MainMenu'
+import { PauseScene } from './scenes/PauseScene'
 import { AUTO, Game } from 'phaser'
 import { Preloader } from './scenes/Preloader'
 
@@ -24,7 +25,7 @@ const config: Phaser.Types.Core.GameConfig = {
         },
     },
 
-    scene: [Boot, Preloader, MainMenu, MainGame, GameOver],
+    scene: [Boot, Preloader, MainMenu, MainGame, GameOver, PauseScene],
 }
 
 export function StartGame(parent: string) {

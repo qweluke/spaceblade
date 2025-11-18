@@ -7,7 +7,6 @@ export class UIManager {
     private rightBorder!: Phaser.GameObjects.TileSprite
     private scoreText!: Phaser.GameObjects.Text
     private livesText!: Phaser.GameObjects.Text
-    private pausedText!: Phaser.GameObjects.Text | null
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene
@@ -84,22 +83,6 @@ export class UIManager {
             fontSize: '48px',
             color: '#ffff00',
         })
-    }
-
-    showPausedText(): void {
-        if (!this.pausedText) {
-            this.pausedText = this.createCenteredText(this.getCenterX(), this.getCenterY(), 'PAUSED', {
-                fontSize: '64px',
-                color: '#ffff00',
-            })
-        }
-        this.pausedText.setVisible(true)
-    }
-
-    hidePausedText(): void {
-        if (this.pausedText) {
-            this.pausedText.setVisible(false)
-        }
     }
 
     private createCenteredText(
