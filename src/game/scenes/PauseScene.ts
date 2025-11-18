@@ -3,6 +3,8 @@ import { Scene } from 'phaser'
 export class PauseScene extends Scene {
     private pausedText!: Phaser.GameObjects.Text
     private escKey!: Phaser.Input.Keyboard.Key
+    private restartButton: Phaser.GameObjects.Text
+    private quitButton: Phaser.GameObjects.Text
 
     constructor() {
         super('PauseScene')
@@ -29,6 +31,46 @@ export class PauseScene extends Scene {
             .setOrigin(0.5)
             .setDepth(1001)
 
+        this.restartButton = this.add
+            .text(gameWidth / 2, gameHeight / 2 + 100, 'Restart', {
+                fontFamily: 'Arial Black',
+                fontSize: 32,
+                color: '#00ff00',
+                stroke: '#000000',
+                strokeThickness: 6,
+                align: 'center',
+            })
+            .setOrigin(0.5)
+            .setDepth(1001)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => this.restartGame())
+            .on('pointerover', () => {
+                this.restartButton.setStyle({ color: '#ffff00' })
+            })
+            .on('pointerout', () => {
+                this.restartButton.setStyle({ color: '#00ff00' })
+            })
+
+        this.quitButton = this.add
+            .text(gameWidth / 2, gameHeight / 2 + 150, 'Quit', {
+                fontFamily: 'Arial Black',
+                fontSize: 32,
+                color: '#00ff00',
+                stroke: '#000000',
+                strokeThickness: 6,
+                align: 'center',
+            })
+            .setOrigin(0.5)
+            .setDepth(1001)
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => this.quitGame())
+            .on('pointerover', () => {
+                this.quitButton.setStyle({ color: '#ffff00' })
+            })
+            .on('pointerout', () => {
+                this.quitButton.setStyle({ color: '#00ff00' })
+            })
+
         // Setup ESC key to resume
         this.escKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
         this.escKey.on('down', () => this.resumeGame())
@@ -38,6 +80,21 @@ export class PauseScene extends Scene {
         if (gameScene && gameScene.scene.isActive()) {
             gameScene.scene.pause()
         }
+    }
+
+    private restartGame(): void {
+        this.scene.start('GameScene', { levelIndex: 0 })
+    }
+
+    private quitGame(): void {
+        const gameScene = this.scene.get('GameScene');
+        if (gameScene) {
+            if (gameScene.children) {
+                gameScene.children.removeAll(true); 
+            }
+            gameScene.scene.stop();
+        }
+        this.scene.start('MainMenu');
     }
 
     private resumeGame(): void {

@@ -19,7 +19,7 @@ export class GameOver extends Scene {
 
 
         this.gameOverText = this.add
-            .text(512, 300, 'Game Over', {
+            .text(gameWidth / 2, gameHeight / 2 , 'Game Over', {
                 fontFamily: 'Arial Black',
                 fontSize: 64,
                 color: '#ffffff',
@@ -31,7 +31,7 @@ export class GameOver extends Scene {
             .setDepth(1001)
 
         this.restartButton = this.add
-            .text(512, 450, 'Restart', {
+            .text(gameWidth / 2, gameHeight / 2 + 100, 'Restart', {
                 fontFamily: 'Arial Black',
                 fontSize: 32,
                 color: '#00ff00',

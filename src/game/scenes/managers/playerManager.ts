@@ -60,9 +60,9 @@ export class PlayerManager {
     private fireBullet(time: number): void {
         this.lastFiredTime = time
 
-        const canFireBullet = this.playerBullets.get() as PlayerBullet | null
+        const bullet = this.playerBullets.get() as PlayerBullet | null
         const maxBullets = this.playerBullets.maxSize
-        if (!canFireBullet) {
+        if (!bullet) {
             console.warn('No available bullets in pool - maxSize ' + maxBullets)
             return
         }
@@ -70,7 +70,7 @@ export class PlayerManager {
         // Play shoot sound
         this.scene.sound.play('shootSound', { volume: 0.5 })
 
-        canFireBullet.fire(this.player.x, this.player.y + GameConstants.BULLET_OFFSET_Y)
+        bullet.fire(this.player.x, this.player.y + GameConstants.BULLET_OFFSET_Y)
     }
 
     hit(): boolean {
