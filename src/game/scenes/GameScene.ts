@@ -45,6 +45,7 @@ export class GameScene extends Phaser.Scene {
         this.load.image('enemy_blue', 'enemy1.png')
         this.load.image('enemy_green', 'enemy2.png')
         this.load.image('boss_mothership', 'mothership.png')
+        this.load.audio('shootSound', 'alienshoot1.wav')
     }
 
     create() {

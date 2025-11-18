@@ -67,6 +67,9 @@ export class PlayerManager {
             return
         }
 
+        // Play shoot sound
+        this.scene.sound.play('shootSound', { volume: 0.5 })
+
         canFireBullet.fire(this.player.x, this.player.y + GameConstants.BULLET_OFFSET_Y)
     }
 
