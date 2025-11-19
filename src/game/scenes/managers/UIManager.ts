@@ -65,24 +65,19 @@ export class UIManager {
         const color = GameConstants.HUD_COLOR
         const gameWidth = this.scene.sys.game.config.width as number
 
-        this.scoreText = this.scene.add.text(padding, padding, `Score: ${this.formatScore(initialScore)}`, {
-            fontSize,
-            color,
-        })
-        .setDepth(1002)
+        this.scoreText = this.scene.add
+            .text(padding, padding, `Score: ${this.formatScore(initialScore)}`, {
+                fontSize,
+                color,
+            })
+            .setDepth(1002)
 
         this.livesText = this.scene.add
             .text(gameWidth - padding, padding, `Lives: ${initialLives}`, { fontSize, color })
             .setOrigin(1, 0)
             .setDepth(1002)
-    }
 
-    updateScore(score: number): void {
-        this.scoreText.setText(`Score: ${this.formatScore(score)}`)
-    }
-
-    updateLives(lives: number): void {
-        this.livesText.setText(`Lives: ${lives}`)
+        this.setupListeners()
     }
 
     showGameOverText(): Phaser.GameObjects.Text {
@@ -133,5 +128,36 @@ export class UIManager {
 
     private getCenterY(): number {
         return this.getGameHeight() / 2
+    }
+
+    private setupListeners(): void {
+        // 1. Nasłuchujemy na zmianę konkretnego klucza 'lives'
+        // Event nazywa się: 'changedata-KLUCZ'
+        this.scene.registry.events.on('changedata-lives', this.updateLives, this)
+
+        // 2. Nasłuchujemy na zmianę 'score'
+        this.scene.registry.events.on('changedata-score', this.updateScore, this)
+
+        // 3. Sprzątanie przy wyjściu ze sceny (bardzo ważne!)
+        this.scene.events.once('shutdown', this.cleanup, this)
+    }
+
+    // Metoda wywoływana automatycznie przez event
+    // Phaser przekazuje: (parent, value, previousValue)
+    // Nas interesuje tylko 'value'
+    private updateLives(_parent: unknown, value: number): void {
+        this.livesText.setText(`Lives: ${value}`)
+    }
+
+    private updateScore(_parent: unknown, value: number): void {
+        this.scoreText.setText(`Score: ${value}`)
+    }
+
+    // Metoda czyszcząca
+    private cleanup(): void {
+        // Musimy odpiąć listenery z registry, bo registry jest GLOBALNE.
+        // Jeśli tego nie zrobisz, po restarcie gry stary UIManager (zombie) nadal będzie próbował zmieniać tekst!
+        this.scene.registry.events.off('changedata-lives', this.updateLives, this)
+        this.scene.registry.events.off('changedata-score', this.updateScore, this)
     }
 }

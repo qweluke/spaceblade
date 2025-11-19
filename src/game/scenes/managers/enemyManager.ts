@@ -155,4 +155,15 @@ export class EnemyManager {
     getEnemyBullets(): Phaser.Physics.Arcade.Group {
         return this.enemyBullets
     }
+
+    // Dodaj tę metodę na końcu klasy EnemyManager (przed klamrą zamykającą)
+    clear(): void {
+        // 1. Zatrzymaj timer ataku
+        this.stopAttackTimer()
+
+        // 2. Wyczyść grupy fizyczne
+        // clear(true, true) oznacza: usuń ze sceny (removeFromScene) i zniszcz obiekt (destroyChild)
+        this.enemies.clear(true, true)
+        this.enemyBullets.clear(true, true)
+    }
 }

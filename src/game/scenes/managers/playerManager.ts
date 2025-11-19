@@ -104,4 +104,9 @@ export class PlayerManager {
     deactivate(): void {
         this.player.setActive(false).setVisible(false)
     }
+
+    resetShootingState(): void {
+        this.lastFiredTime = 0
+    }
+    
 }
