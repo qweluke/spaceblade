@@ -1,12 +1,12 @@
 import { GameObjects, Scene } from 'phaser'
-
 import { EventBus } from '../EventBus'
+import { MenuController } from '../controllers/MenuController'
 
 export class MainMenu extends Scene {
     background: GameObjects.Image
     logo: GameObjects.Image
     title: GameObjects.Text
-    startButton: GameObjects.Text
+
     logoTween: Phaser.Tweens.Tween | null
 
     constructor() {
@@ -14,12 +14,15 @@ export class MainMenu extends Scene {
     }
 
     create() {
-        this.background = this.add.image(512, 384, 'background')
 
+        const gameWidth = this.sys.game.config.width as number
+        const gameHeight = this.sys.game.config.height as number
+
+        this.background = this.add.image(512, 384, 'background')
         this.logo = this.add.image(512, 300, 'logo').setDepth(100)
 
         this.title = this.add
-            .text(512, 460, 'Main Menu', {
+            .text(gameWidth / 2, gameHeight / 2 + 20, 'Main Menu', {
                 fontFamily: 'Arial Black',
                 fontSize: 38,
                 color: '#ffffff',
@@ -30,8 +33,9 @@ export class MainMenu extends Scene {
             .setOrigin(0.5)
             .setDepth(100)
 
-        this.startButton = this.add
-            .text(512, 520, 'Start Game', {
+        // Tworzymy przyciski (tylko wygląd, bez logiki interakcji!)
+        const startButton = this.add
+            .text(gameWidth / 2, gameHeight / 2 + 100, 'Start Game', {
                 fontFamily: 'Arial Black',
                 fontSize: 32,
                 color: '#00ff00',
@@ -41,27 +45,40 @@ export class MainMenu extends Scene {
             })
             .setOrigin(0.5)
             .setDepth(100)
-            .setInteractive({ useHandCursor: true })
-            .on('pointerdown', this.changeScene.bind(this))
-            .on('pointerover', () => {
-                this.startButton.setStyle({ color: '#ffff00' })
+
+        const optionsButton = this.add
+            .text(gameWidth / 2, gameHeight / 2 + 150, 'Options', {
+                fontFamily: 'Arial Black',
+                fontSize: 32,
+                color: '#00ff00',
+                stroke: '#000000',
+                strokeThickness: 6,
+                align: 'center',
             })
-            .on('pointerout', () => {
-                this.startButton.setStyle({ color: '#00ff00' })
-            })
+            .setOrigin(0.5)
+            .setDepth(100)
+
+        // === TUTAJ DZIEJE SIĘ MAGIA ===
+        // Delegujemy obsługę menu do naszego kontrolera
+        new MenuController({
+            scene: this,
+            buttons: [startButton, optionsButton],
+            defaultStyle: { color: '#00ff00' },
+            selectedStyle: { color: '#ffff00' },
+            onConfirm: (index) => {
+                if (index === 0) this.startGame()
+                if (index === 1) console.log('Options...')
+            },
+        })
 
         EventBus.emit('current-scene-ready', this)
     }
 
-    changeScene() {
-        if (this.logoTween) {
-            this.logoTween.stop()
-            this.logoTween = null
-        }
-
+    startGame() {
         this.scene.start('GameScene')
     }
 
+    // ... reszta kodu (moveLogo) bez zmian ...
     moveLogo(vueCallback: ({ x, y }: { x: number; y: number }) => void) {
         if (this.logoTween) {
             if (this.logoTween.isPlaying()) this.logoTween.pause()

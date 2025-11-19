@@ -19,7 +19,7 @@ export class GameOver extends Scene {
 
 
         this.gameOverText = this.add
-            .text(gameWidth / 2, gameHeight / 2 , 'Game Over', {
+            .text(gameWidth / 2, gameHeight / 2, 'Game Over', {
                 fontFamily: 'Arial Black',
                 fontSize: 64,
                 color: '#ffffff',
