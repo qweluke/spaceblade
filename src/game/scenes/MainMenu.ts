@@ -14,7 +14,6 @@ export class MainMenu extends Scene {
     }
 
     create() {
-
         const gameWidth = this.sys.game.config.width as number
         const gameHeight = this.sys.game.config.height as number
 
@@ -62,13 +61,18 @@ export class MainMenu extends Scene {
         // Delegujemy obsługę menu do naszego kontrolera
         new MenuController({
             scene: this,
-            buttons: [startButton, optionsButton],
+            menuItems: [
+                {
+                    button: startButton,
+                    handler: () => this.startGame(),
+                },
+                {
+                    button: optionsButton,
+                    handler: () => console.log('Options Clicked'),
+                },
+            ],
             defaultStyle: { color: '#00ff00' },
             selectedStyle: { color: '#ffff00' },
-            onConfirm: (index) => {
-                if (index === 0) this.startGame()
-                if (index === 1) console.log('Options...')
-            },
         })
 
         EventBus.emit('current-scene-ready', this)

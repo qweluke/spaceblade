@@ -50,17 +50,24 @@ export class PauseScene extends Scene {
             .setOrigin(0.5)
             .setDepth(1001)
 
-        // === UŻYCIE KONTROLERA ===
         new MenuController({
             scene: this,
-            buttons: [resumeButton, restartButton, quitButton],
+            menuItems: [
+                {
+                    button: resumeButton,
+                    handler: () => this.resumeGame(),
+                },
+                {
+                    button: restartButton,
+                    handler: () => this.restartGame(),
+                },
+                {
+                    button: quitButton,
+                    handler: () => this.quitGame(),
+                },
+            ],
             defaultStyle: { color: '#00ff00' },
             selectedStyle: { color: '#ffff00' },
-            onConfirm: (index) => {
-                if (index === 0) this.resumeGame()
-                if (index === 1) this.restartGame()
-                if (index === 2) this.quitGame()
-            },
         })
 
         // Pause the GameScene logic
