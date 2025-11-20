@@ -57,6 +57,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         return this.currentState === 'inFormation'
     }
 
+    get isAttacking(): boolean {
+        return this.currentState === 'attacking'
+    }
+
     /**
      * Rozpoczyna lot wzdłuż zdefiniowanej ścieżki wejścia.
      */

@@ -183,15 +183,15 @@ export class EnemyController {
     private triggerEnemyShoot(): void {
         const availableEnemies = this.enemies.getChildren().filter((e) => {
             const enemy = e as Enemy
-            return enemy.isInFormation && enemy.active
+            return enemy.isAttacking && enemy.active
         })
 
-        if (availableEnemies.length > 0) {
-            // Random chance to shoot (30% chance per timer tick)
-            if (Math.random() < 0.3) {
-                const shooter = Phaser.Utils.Array.GetRandom(availableEnemies) as Enemy
-                this.shootBullet(shooter)
-            }
+        if (!availableEnemies.length) return
+
+        // Random chance to shoot (30% chance per timer tick)
+        if (Math.random() < 0.3) {
+            const shooter = Phaser.Utils.Array.GetRandom(availableEnemies) as Enemy
+            this.shootBullet(shooter)
         }
     }
 
