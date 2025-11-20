@@ -144,6 +144,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         }
 
         this.currentState = 'attacking'
+        
+        // Emit event that enemy is attacking (so EnemyController can make it shoot)
+        this.emit('enemyAttacking', this)
 
         // Tworzenie dynamicznej ścieżki ataku
         const startPoint = new Phaser.Math.Vector2(this.x, this.y)

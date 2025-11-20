@@ -3,6 +3,7 @@ import { Enemy } from '../Enemy'
 import { GameBoss, GameWave } from '../types'
 import { FormationController } from './FormationController'
 import { GameConstants } from '../gameConstants'
+import { EnemyBullet } from '../EnemyBullet'
 
 export class EnemyController {
     private scene: Phaser.Scene
@@ -11,6 +12,7 @@ export class EnemyController {
     private formationManager: FormationController
     private paths: Map<string, Phaser.Curves.Path>
     private attackTimer!: Phaser.Time.TimerEvent
+    private shootTimer!: Phaser.Time.TimerEvent
     private player!: Phaser.Physics.Arcade.Sprite
 
     constructor(scene: Phaser.Scene, formationManager: FormationController, paths: Map<string, Phaser.Curves.Path>) {
@@ -23,7 +25,9 @@ export class EnemyController {
 
     create(): void {
         this.enemyBullets = this.scene.physics.add.group({
+            classType: EnemyBullet,
             runChildUpdate: true,
+            maxSize: 20, // Maximum number of enemy bullets on screen
         })
 
         this.enemies = this.scene.physics.add.group({
@@ -64,6 +68,10 @@ export class EnemyController {
                 this.onEnemyArrival(enemy, onArrival)
             })
             enemy.once('enemyKilled', (enemy: Enemy) => onKilled( enemy))
+            enemy.on('enemyAttacking', (enemy: Enemy) => {
+                // Enemy shoots when starting an attack run
+                this.shootBullet(enemy)
+            })
         }
     }
 
@@ -99,6 +107,10 @@ export class EnemyController {
         })
 
         boss.once('enemyKilled', (enemy: Enemy) => onKilled(enemy))
+        boss.on('enemyAttacking', (enemy: Enemy) => {
+            // Boss shoots when starting an attack run
+            this.shootBullet(enemy)
+        })
     }
 
     private onEnemyArrival(enemy: Enemy, onArrival: (enemy: Enemy) => void): void {
@@ -121,9 +133,7 @@ export class EnemyController {
     }
 
     startAttackTimer(): void {
-        if (this.attackTimer) {
-            this.attackTimer.remove()
-        }
+        if (this.attackTimer) this.attackTimer.remove()
 
         this.attackTimer = this.scene.time.addEvent({
             delay: GameConstants.ATTACK_TIMER_DELAY,
@@ -139,6 +149,25 @@ export class EnemyController {
         }
     }
 
+    startShootTimer(): void {
+        if (this.shootTimer) {
+            this.shootTimer.remove()
+        }
+
+        this.shootTimer = this.scene.time.addEvent({
+            delay: GameConstants.ENEMY_SHOOT_TIMER_DELAY,
+            callback: this.triggerEnemyShoot,
+            callbackScope: this,
+            loop: true,
+        })
+    }
+
+    stopShootTimer(): void {
+        if (this.shootTimer) {
+            this.shootTimer.remove()
+        }
+    }
+
     private triggerEnemyAttack(): void {
         const availableEnemies = this.enemies.getChildren().filter((e) => {
             const enemy = e as Enemy
@@ -151,6 +180,31 @@ export class EnemyController {
         }
     }
 
+    private triggerEnemyShoot(): void {
+        const availableEnemies = this.enemies.getChildren().filter((e) => {
+            const enemy = e as Enemy
+            return enemy.isInFormation && enemy.active
+        })
+
+        if (availableEnemies.length > 0) {
+            // Random chance to shoot (30% chance per timer tick)
+            if (Math.random() < 0.3) {
+                const shooter = Phaser.Utils.Array.GetRandom(availableEnemies) as Enemy
+                this.shootBullet(shooter)
+            }
+        }
+    }
+
+    shootBullet(enemy: Enemy): void {
+        const bullet = this.enemyBullets.get() as EnemyBullet | null
+        if (!bullet) {
+            // No available bullets in pool
+            return
+        }
+
+        bullet.fire(enemy.x, enemy.y + GameConstants.ENEMY_BULLET_OFFSET_Y, GameConstants.ENEMY_BULLET_SPEED)
+    }
+
     getEnemies(): Phaser.Physics.Arcade.Group {
         return this.enemies
     }
@@ -161,8 +215,9 @@ export class EnemyController {
 
     // Dodaj tę metodę na końcu klasy EnemyManager (przed klamrą zamykającą)
     clear(): void {
-        // 1. Zatrzymaj timer ataku
+        // 1. Zatrzymaj timery
         this.stopAttackTimer()
+        this.stopShootTimer()
 
         // 2. Wyczyść grupy fizyczne
         // clear(true, true) oznacza: usuń ze sceny (removeFromScene) i zniszcz obiekt (destroyChild)

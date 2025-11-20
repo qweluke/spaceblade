@@ -9,6 +9,9 @@ export class GameConstants {
 
     // Enemy & Formation
     static readonly ATTACK_TIMER_DELAY = 2500
+    static readonly ENEMY_SHOOT_TIMER_DELAY = 1500 // How often enemies shoot from formation
+    static readonly ENEMY_BULLET_SPEED = 300
+    static readonly ENEMY_BULLET_OFFSET_Y = 30
     static readonly FORMATION_MOVE_DURATION = 1000
     static readonly FORMATION_ROWS = 4
     static readonly FORMATION_COLS = 8

@@ -126,11 +126,13 @@ export class GameScene extends Phaser.Scene {
         switch (newState) {
             case GameState.PLAYING:
                 this.enemyController.startAttackTimer()
+                this.enemyController.startShootTimer()
                 // Włącz sterowanie gracza
                 break
 
             case GameState.LEVEL_COMPLETE:
                 this.enemyController.stopAttackTimer()
+                this.enemyController.stopShootTimer()
                 // this.playerManager.setInvincible(true); // Żeby nie zginąć przypadkiem
 
                 this.time.delayedCall(GameConstants.LEVEL_COMPLETE_DELAY, () => {
@@ -142,6 +144,7 @@ export class GameScene extends Phaser.Scene {
 
             case GameState.GAME_OVER:
                 this.enemyController.stopAttackTimer()
+                this.enemyController.stopShootTimer()
                 this.scene.launch('GameOver') // Lub obsługa w UI
                 break
 
@@ -190,6 +193,7 @@ export class GameScene extends Phaser.Scene {
         }
 
         this.enemyController.startAttackTimer()
+        this.enemyController.startShootTimer()
     }
 
     private onPlayerHit(): void {
