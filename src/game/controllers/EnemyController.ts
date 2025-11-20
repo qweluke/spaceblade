@@ -100,7 +100,7 @@ export class EnemyController {
 
         boss.once('pathComplete', (bossEnemy: Enemy) => {
             const endOfPath = path.getEndPoint()
-            bossEnemy.formationSlot.set(endOfPath.x, endOfPath.y)
+            bossEnemy.formationBasePosition.set(endOfPath.x, endOfPath.y)
             bossEnemy.currentState = 'inFormation'
             bossEnemy.setRotation(0)
             bossEnemy.emit('inFormation', bossEnemy)

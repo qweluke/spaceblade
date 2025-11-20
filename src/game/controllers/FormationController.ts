@@ -40,12 +40,21 @@ export class FormationController {
         const offsetX = Math.sin(time * this.formationSwaySpeed) * this.formationSwayAmplitude
         const offsetY = Math.cos(time * this.formationSwaySpeed) * (this.formationSwayAmplitude / 3)
 
-        this.updateFormationCache(enemies)
+        // Update formationSwayedPosition for ALL enemies (including returning ones)
+        // so they can tween to the correct swayed position
+        enemies.getChildren().forEach((child) => {
+            const enemy = child as Enemy
+            if (enemy.active && enemy.formationSlotIndex !== null) {
+                enemy.formationSwayedPosition.set(enemy.formationBasePosition.x + offsetX, enemy.formationBasePosition.y + offsetY)
+            }
+        })
 
+        // Only move enemies that are already in formation
+        this.updateFormationCache(enemies)
         this.formationEnemiesCache.forEach((enemy) => {
-            if (enemy.active && enemy.isInFormation) {
-                enemy.x = enemy.formationSlot.x + offsetX
-                enemy.y = enemy.formationSlot.y + offsetY
+            if (enemy.isInFormation) {
+                enemy.x = enemy.formationBasePosition.x + offsetX
+                enemy.y = enemy.formationBasePosition.y + offsetY
             }
         })
     }
