@@ -9,6 +9,7 @@ import { CollisionController } from '../controllers/CollisionController'
 import { LevelController } from '../controllers/LevelController'
 import { GameState } from '../types/GameState'
 import { Enemy } from '../Enemy'
+import { preloadGameScene } from '../actions/GameSceneActions'
 
 export class GameScene extends Phaser.Scene {
     // Managers
@@ -56,20 +57,19 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.setPath('assets')
-        this.load.image('playerTexture', 'player1.png')
-        this.load.image('borderTexture', 'border.png')
-        this.load.image('bulletTexture', 'bullet.png')
-        this.load.image('enemyBulletTexture', 'enemyBullet.png')
-        this.load.image('starsATexture', 'stars-A.png')
-        this.load.image('starsBTexture', 'stars-B.png')
-        this.load.image('enemy_blue', 'enemy1.png')
-        this.load.image('enemy_green', 'enemy2.png')
-        this.load.image('boss_mothership', 'mothership.png')
-        this.load.audio('shootSound', 'alienshoot1.wav')
+        preloadGameScene(this)
     }
 
     create() {
+        // Create explosion animation
+        this.anims.create({
+            key: 'explode',
+            frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 15 }),
+            frameRate: 30,
+            repeat: 0,
+            hideOnComplete: true
+        })
+
         // Inicjalizacja managerów
         this.uiController = new UIController(this)
         this.formationController = new FormationController(this)
@@ -106,7 +106,7 @@ export class GameScene extends Phaser.Scene {
         this.setState(GameState.PLAYING)
     }
 
-    update(time: number, delta: number) {
+    update(_: number, delta: number) {
         if (!this.playerController.getPlayer().active) {
             return
         }
@@ -203,7 +203,13 @@ export class GameScene extends Phaser.Scene {
         this.playerLives--
         this.registry.set('lives', this.playerLives)
 
-        if (this.playerLives <= 0) this.setState(GameState.GAME_OVER)
+        if (this.playerLives <= 0) {
+            this.playerController.die()
+            
+            this.time.delayedCall(1000, () => {
+                this.setState(GameState.GAME_OVER)
+            })
+        }
     }
 
     private onEnemyKilled(enemy: Enemy): void {

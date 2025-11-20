@@ -269,11 +269,18 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         // Emituj zdarzenie do GameScene z wartością punktową i referencją do wroga
         this.emit('enemyKilled', this)
 
-        // TODO: Dodaj animację eksplozji
-        // np. this.play('explosion').on('animationcomplete', () => this.destroy());
-
-        // Na razie po prostu zniknij i zniszcz obiekt
+        // Hide the enemy sprite and show explosion
         this.setVisible(false)
-        this.destroy() // Bezpieczne usunięcie obiektu
+        
+        // Create explosion sprite at enemy position
+        const explosion = this.scene.add.sprite(this.x, this.y, 'explosion')
+        explosion.play('explode')
+
+        this.scene.sound.play('explosion1', { volume: 0.5 })
+        
+        explosion.once('animationcomplete', explosion.destroy)
+        
+        // Destroy the enemy object
+        this.destroy()
     }
 }

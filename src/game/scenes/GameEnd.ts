@@ -54,6 +54,8 @@ export class GameEnd extends Scene {
             if (gameScene && gameScene.scene.isActive()) {
                 gameScene.scene.pause()
             }
+
+            this.sound.play('fanfare', { volume: 1 })
             
         EventBus.emit('current-scene-ready', this)
     }

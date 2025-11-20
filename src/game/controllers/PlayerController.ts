@@ -106,6 +106,25 @@ export class PlayerController {
         this.player.setActive(false).setVisible(false)
     }
 
+    die(): void {
+        // Stop player from being active
+        this.player.setActive(false)
+        
+        // Save position before hiding
+        const playerX = this.player.x
+        const playerY = this.player.y
+        
+        // Hide the player sprite
+        this.player.setVisible(false)
+        
+        // Create explosion sprite at player position
+        const explosion = this.scene.add.sprite(playerX, playerY, 'explosion')
+        explosion.play('explode')
+        this.scene.sound.play('explosion1', { volume: 0.5 })
+        
+        explosion.once('animationcomplete', explosion.destroy)
+    }
+
     resetShootingState(): void {
         this.lastFiredTime = 0
     }

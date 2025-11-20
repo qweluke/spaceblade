@@ -8,7 +8,7 @@ export const levels: readonly GameLevel[] = [
             {
                 enemyType: 'enemy_blue',
                 pathKey: 'path_swoop_left',
-                count: 3,
+                count: 8,
                 duration: 4000,
                 delay: 300,
                 health: 1,
@@ -17,7 +17,7 @@ export const levels: readonly GameLevel[] = [
             {
                 enemyType: 'enemy_green',
                 pathKey: 'path_swoop_right',
-                count: 1,
+                count: 8,
                 duration: 4000,
                 delay: 300,
                 health: 2,
