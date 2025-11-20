@@ -181,10 +181,7 @@ export class EnemyController {
     }
 
     private triggerEnemyShoot(): void {
-        const availableEnemies = this.enemies.getChildren().filter((e) => {
-            const enemy = e as Enemy
-            return enemy.isAttacking && enemy.active
-        })
+        const availableEnemies = this.enemies.getChildren().filter((e) => (e as Enemy).canShoot)
 
         if (!availableEnemies.length) return
 
