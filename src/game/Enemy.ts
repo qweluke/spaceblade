@@ -12,11 +12,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     // Stan
     public formationSlot: Phaser.Math.Vector2 // Miejsce "domowe" w formacji
+    public formationSlotIndex: number | null = null // Indeks slotu w formacji
     public currentState: EnemyState
 
     // Statystyki
     private health: number = 1
-    private pointsValue: number = 100
+    protected pointsValue: number = 100
     public type: 'wave' | 'boss' = 'wave'
 
     private gameScene: Phaser.Scene // Możesz tu użyć 'GameScene' jeśli ją zaimportujesz
@@ -32,6 +33,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.currentState = 'spawning' // Zaczyna w stanie "spawnowania"
     }
 
+
+    public getPointsValue(): number {
+        return this.pointsValue
+    }
     /**
      * Ustawia statystyki wroga (wywoływane przez GameScene).
      */
@@ -234,8 +239,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
             this.pathTween = undefined
         }
 
-        // Emituj zdarzenie do GameScene z wartością punktową
-        this.emit('enemyKilled', this.pointsValue)
+        // Emituj zdarzenie do GameScene z wartością punktową i referencją do wroga
+        this.emit('enemyKilled', this)
 
         // TODO: Dodaj animację eksplozji
         // np. this.play('explosion').on('animationcomplete', () => this.destroy());

@@ -36,7 +36,7 @@ export class EnemyController {
         this.player = player
     }
 
-    spawnWave(waveConfig: GameWave, onArrival: (enemy: Enemy) => void, onKilled: (points: number) => void): void {
+    spawnWave(waveConfig: GameWave, onArrival: (enemy: Enemy) => void, onKilled: (enemy: Enemy) => void): void {
         const path = this.paths.get(waveConfig.pathKey)
         if (!path) {
             console.warn(`Path not found: ${waveConfig.pathKey}`)
@@ -63,11 +63,11 @@ export class EnemyController {
             enemy.once('pathComplete', () => {
                 this.onEnemyArrival(enemy, onArrival)
             })
-            enemy.once('enemyKilled', onKilled)
+            enemy.once('enemyKilled', (enemy: Enemy) => onKilled( enemy))
         }
     }
 
-    spawnBoss(bossConfig: GameBoss, onKilled: (points: number) => void): void {
+    spawnBoss(bossConfig: GameBoss, onKilled: (enemy: Enemy) => void): void {
         const path = this.paths.get(bossConfig.pathKey)
         if (!path) {
             console.warn(`Path not found: ${bossConfig.pathKey}`)
@@ -98,7 +98,7 @@ export class EnemyController {
             bossEnemy.emit('inFormation', bossEnemy)
         })
 
-        boss.once('enemyKilled', onKilled)
+        boss.once('enemyKilled', (enemy: Enemy) => onKilled(enemy))
     }
 
     private onEnemyArrival(enemy: Enemy, onArrival: (enemy: Enemy) => void): void {
@@ -110,6 +110,7 @@ export class EnemyController {
 
         const targetPos = this.formationManager.getSlotPosition(slotIndex)
         this.formationManager.occupySlot(slotIndex)
+        enemy.formationSlotIndex = slotIndex
 
         enemy.moveToFormation(targetPos.x, targetPos.y, GameConstants.FORMATION_MOVE_DURATION)
 

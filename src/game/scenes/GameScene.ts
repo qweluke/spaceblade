@@ -8,6 +8,7 @@ import { FormationController } from '../controllers/FormationController'
 import { CollisionController } from '../controllers/CollisionController'
 import { LevelController } from '../controllers/LevelController'
 import { GameState } from '../types/GameState'
+import { Enemy } from '../Enemy'
 
 export class GameScene extends Phaser.Scene {
     // Managers
@@ -180,12 +181,12 @@ export class GameScene extends Phaser.Scene {
                 this.enemyController.spawnWave(
                     wave,
                     () => {},
-                    (points) => this.onEnemyKilled(points)
+                    (enemy) => this.onEnemyKilled(enemy)
                 )
             })
         } else if (levelData.type === 'boss') {
             this.enemiesLeftInGame = 1
-            this.enemyController.spawnBoss(levelData.boss, (points) => this.onEnemyKilled(points))
+            this.enemyController.spawnBoss(levelData.boss, (enemy) => this.onEnemyKilled(enemy))
         }
 
         this.enemyController.startAttackTimer()
@@ -200,12 +201,12 @@ export class GameScene extends Phaser.Scene {
         if (this.playerLives <= 0) this.setState(GameState.GAME_OVER)
     }
 
-    private onEnemyKilled(points: number): void {
-        this.score += points
+    private onEnemyKilled(enemy: Enemy): void {
+        this.score += enemy.getPointsValue()
         this.registry.set('score', this.score)
 
         this.enemiesLeftInGame--
-        this.formationController.freeSlot()
+        this.formationController.freeSlot(enemy.formationSlotIndex)
         this.checkLevelComplete()
     }
 

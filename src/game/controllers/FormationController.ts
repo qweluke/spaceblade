@@ -70,10 +70,9 @@ export class FormationController {
         this.nextSlotIndex = (slotIndex + 1) % this.formationSlots.length
     }
 
-    freeSlot(): void {
-        if (this.occupiedSlots.size > 0) {
-            const firstSlot = this.occupiedSlots.values().next().value!
-            this.occupiedSlots.delete(firstSlot)
+    freeSlot(slotIndex: number | null): void {
+        if (slotIndex !== null && this.occupiedSlots.has(slotIndex)) {
+            this.occupiedSlots.delete(slotIndex)
         }
     }
 
