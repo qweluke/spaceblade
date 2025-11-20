@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser'
+import { getGameHeight, getGameWidth } from './helpers/gameHelpers'
 
 // Definiujemy typy stanów, żeby kod był czytelniejszy
 type EnemyState = 'spawning' | 'inFormation' | 'attacking' | 'returning' | 'dead'
@@ -147,8 +148,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         const controlPoint1 = new Phaser.Math.Vector2(startPoint.x, startPoint.y + 150)
         const controlPoint2 = new Phaser.Math.Vector2(playerPos.x + Phaser.Math.Between(-200, 200), playerPos.y + 50)
         const endPoint = new Phaser.Math.Vector2(
-            Phaser.Math.Between(0, this.scene.sys.game.config.width as number),
-            (this.scene.sys.game.config.height as number) + 100
+            Phaser.Math.Between(0, getGameWidth(this.gameScene)),
+            getGameHeight(this.gameScene) + 100
         )
 
         const attackCurve = new Phaser.Curves.CubicBezier(startPoint, controlPoint1, controlPoint2, endPoint)

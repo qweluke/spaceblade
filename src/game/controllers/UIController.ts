@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser'
 import { GameConstants } from '../gameConstants'
+import { getGameHeight, getGameWidth } from '../helpers/gameHelpers'
 
 export class UIController {
     private scene: Phaser.Scene
@@ -24,8 +25,8 @@ export class UIController {
     }
 
     createBorders(): void {
-        const gameWidth = this.scene.sys.game.config.width as number
-        const gameHeight = this.scene.sys.game.config.height as number
+        const gameWidth = getGameWidth(this.scene)
+        const gameHeight = getGameHeight(this.scene)
         const borderWidth = GameConstants.BORDER_WIDTH
 
         this.leftBorder = this.scene.add
@@ -39,8 +40,8 @@ export class UIController {
     }
 
     createStars(): void {
-        const gameWidth = this.scene.sys.game.config.width as number
-        const gameHeight = this.scene.sys.game.config.height as number
+        const gameWidth = getGameWidth(this.scene)
+        const gameHeight = getGameHeight(this.scene)
 
         // Make starsA and starsB start at (0,0) and cover full game width and height
         this.starsA = this.scene.add.tileSprite(0, 0, gameWidth, gameHeight, 'starsATexture').setOrigin(0, 0)
@@ -72,7 +73,7 @@ export class UIController {
         const padding = GameConstants.HUD_PADDING
         const fontSize = GameConstants.HUD_FONT_SIZE
         const color = GameConstants.HUD_COLOR
-        const gameWidth = this.scene.sys.game.config.width as number
+        const gameWidth = getGameWidth(this.scene) as number
 
         this.scoreText = this.scene.add
             .text(padding, padding, `Score: ${this.formatScore(initialScore)}`, {
@@ -136,11 +137,11 @@ export class UIController {
     }
 
     private getGameWidth(): number {
-        return this.scene.sys.game.config.width as number
+        return getGameWidth(this.scene)
     }
 
     private getGameHeight(): number {
-        return this.scene.sys.game.config.height as number
+        return getGameHeight(this.scene)
     }
 
     private getCenterX(): number {

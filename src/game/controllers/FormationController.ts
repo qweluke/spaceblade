@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser'
 import { Enemy } from '../Enemy'
 import { GameConstants } from '../gameConstants'
+import { getGameWidth } from '../helpers/gameHelpers'
 
 export class FormationController {
     private scene: Phaser.Scene
@@ -24,7 +25,7 @@ export class FormationController {
         const cols = GameConstants.FORMATION_COLS
         const spacingX = GameConstants.FORMATION_SPACING_X
         const spacingY = GameConstants.FORMATION_SPACING_Y
-        const gameWidth = this.scene.sys.game.config.width as number
+        const gameWidth = getGameWidth(this.scene)
         const startX = gameWidth / 2 - (spacingX * (cols - 1)) / 2
         const startY = GameConstants.FORMATION_START_Y
 
