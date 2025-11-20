@@ -5,6 +5,7 @@ import { MainMenu } from './scenes/MainMenu'
 import { PauseScene } from './scenes/PauseScene'
 import { AUTO, Game } from 'phaser'
 import { Preloader } from './scenes/Preloader'
+import { GameEnd } from './scenes/GameEnd'
 
 //  Find out more information about the Game Config at:
 //  https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
@@ -25,7 +26,7 @@ const config: Phaser.Types.Core.GameConfig = {
         },
     },
 
-    scene: [Boot, Preloader, MainMenu, MainGame, GameOver, PauseScene],
+    scene: [Boot, Preloader, MainMenu, MainGame, GameOver, PauseScene, GameEnd],
 }
 
 export function StartGame(parent: string) {

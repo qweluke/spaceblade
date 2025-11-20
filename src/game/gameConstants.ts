@@ -4,7 +4,7 @@ export class GameConstants {
     static readonly PLAYER_START_Y_OFFSET = 50
     static readonly FIRE_RATE = 250
     static readonly BULLET_OFFSET_Y = -30
-    static readonly INITIAL_LIVES = 3
+    static readonly INITIAL_LIVES = 1
     static readonly INITIAL_SCORE = 0
 
     // Enemy & Formation

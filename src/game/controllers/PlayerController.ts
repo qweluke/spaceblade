@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser'
-import { PlayerBullet } from '../../PlayerBullet'
-import { GameConstants } from './gameConstants'
+import { PlayerBullet } from '../PlayerBullet'
+import { GameConstants } from '../gameConstants'
 
-export class PlayerManager {
+export class PlayerController {
     private scene: Phaser.Scene
     private player!: Phaser.Physics.Arcade.Sprite & { isInvincible?: boolean }
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
@@ -11,6 +11,7 @@ export class PlayerManager {
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene
+
     }
 
     create(): void {

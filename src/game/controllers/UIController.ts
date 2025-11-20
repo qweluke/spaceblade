@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
-import { GameConstants } from './gameConstants'
+import { GameConstants } from '../gameConstants'
 
-export class UIManager {
+export class UIController {
     private scene: Phaser.Scene
     private leftBorder!: Phaser.GameObjects.TileSprite
     private rightBorder!: Phaser.GameObjects.TileSprite
@@ -9,9 +9,18 @@ export class UIManager {
     private starsB!: Phaser.GameObjects.TileSprite
     private scoreText!: Phaser.GameObjects.Text
     private livesText!: Phaser.GameObjects.Text
+    private levelCompleteText!: Phaser.GameObjects.Text
+    private gameOverText!: Phaser.GameObjects.Text
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene
+
+        const score = this.scene.registry.get('score') || GameConstants.INITIAL_SCORE
+        const lives = this.scene.registry.get('lives') || GameConstants.INITIAL_LIVES
+
+        this.createBorders()
+        this.createStars()
+        this.createHUD(score, lives)
     }
 
     createBorders(): void {
@@ -22,11 +31,11 @@ export class UIManager {
         this.leftBorder = this.scene.add
             .tileSprite(borderWidth / 2, gameHeight / 2, borderWidth, gameHeight, 'borderTexture')
             .setDepth(2) // keep above stars
+        this.leftBorder.setFlipX(true)
 
         this.rightBorder = this.scene.add
             .tileSprite(gameWidth - borderWidth / 2, gameHeight / 2, borderWidth, gameHeight, 'borderTexture')
             .setDepth(2) // keep above stars
-        this.rightBorder.setFlipX(true)
     }
 
     createStars(): void {
@@ -80,18 +89,30 @@ export class UIManager {
         this.setupListeners()
     }
 
-    showGameOverText(): Phaser.GameObjects.Text {
-        return this.createCenteredText(this.getCenterX(), this.getCenterY(), 'GAME OVER', {
+    showGameOverText(): void {
+        this.gameOverText = this.createCenteredText(this.getCenterX(), this.getCenterY(), 'GAME OVER', {
             fontSize: '64px',
             color: '#ff0000',
         })
     }
 
-    showLevelCompleteText(): Phaser.GameObjects.Text {
-        return this.createCenteredText(this.getCenterX(), this.getCenterY(), 'LEVEL CLEAR!', {
+    showLevelCompleteText(): void {
+        this.levelCompleteText = this.createCenteredText(this.getCenterX(), this.getCenterY(), 'LEVEL CLEAR!', {
             fontSize: '48px',
             color: '#00ff00',
         })
+    }
+
+    hideLevelCompleteText(): void {
+        if (this.levelCompleteText) {
+            this.levelCompleteText.destroy()
+        }
+    }
+
+    hideGameOverText(): void {
+        if (this.gameOverText) {
+            this.gameOverText.destroy()
+        }
     }
 
     showCongratulationsText(): Phaser.GameObjects.Text {
@@ -140,6 +161,8 @@ export class UIManager {
 
         // 3. Sprzątanie przy wyjściu ze sceny (bardzo ważne!)
         this.scene.events.once('shutdown', this.cleanup, this)
+
+        this.scene.registry.events.on('changedata-gameState', this.onGameStateChange, this)
     }
 
     // Metoda wywoływana automatycznie przez event
@@ -159,5 +182,26 @@ export class UIManager {
         // Jeśli tego nie zrobisz, po restarcie gry stary UIManager (zombie) nadal będzie próbował zmieniać tekst!
         this.scene.registry.events.off('changedata-lives', this.updateLives, this)
         this.scene.registry.events.off('changedata-score', this.updateScore, this)
+    }
+
+    private onGameStateChange(_parent: unknown, newState: string) {
+        // Ukrywamy wszystko na start (czyszczenie przed nowym stanem)
+        this.hideLevelCompleteText()
+        this.hideGameOverText()
+
+        switch (newState) {
+            case 'LEVEL_COMPLETE':
+                this.showLevelCompleteText()
+                break
+
+            case 'GAME_OVER':
+                this.showGameOverText()
+                break
+
+            case 'PLAYING':
+                // Upewniamy się, że HUD jest widoczny, a napisy zniknęły
+                // this.showHUD()
+                break
+        }
     }
 }

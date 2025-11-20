@@ -1,22 +1,24 @@
 import * as Phaser from 'phaser'
-import { Enemy } from '../../Enemy'
-import { GameBoss, GameWave } from '../../types'
-import { FormationManager } from './formationManager'
-import { GameConstants } from './gameConstants'
+import { Enemy } from '../Enemy'
+import { GameBoss, GameWave } from '../types'
+import { FormationController } from './FormationController'
+import { GameConstants } from '../gameConstants'
 
-export class EnemyManager {
+export class EnemyController {
     private scene: Phaser.Scene
     private enemies!: Phaser.Physics.Arcade.Group
     private enemyBullets!: Phaser.Physics.Arcade.Group
-    private formationManager: FormationManager
+    private formationManager: FormationController
     private paths: Map<string, Phaser.Curves.Path>
     private attackTimer!: Phaser.Time.TimerEvent
     private player!: Phaser.Physics.Arcade.Sprite
 
-    constructor(scene: Phaser.Scene, formationManager: FormationManager, paths: Map<string, Phaser.Curves.Path>) {
+    constructor(scene: Phaser.Scene, formationManager: FormationController, paths: Map<string, Phaser.Curves.Path>) {
         this.scene = scene
         this.formationManager = formationManager
         this.paths = paths
+
+        this.create()
     }
 
     create(): void {
