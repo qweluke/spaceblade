@@ -60,6 +60,7 @@ export class GameScene extends Phaser.Scene {
         this.load.image('playerTexture', 'player1.png')
         this.load.image('borderTexture', 'border.png')
         this.load.image('bulletTexture', 'bullet.png')
+        this.load.image('enemyBulletTexture', 'enemyBullet.png')
         this.load.image('starsATexture', 'stars-A.png')
         this.load.image('starsBTexture', 'stars-B.png')
         this.load.image('enemy_blue', 'enemy1.png')

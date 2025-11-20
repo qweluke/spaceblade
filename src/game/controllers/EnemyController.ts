@@ -199,7 +199,42 @@ export class EnemyController {
             return
         }
 
-        bullet.fire(enemy.x, enemy.y + GameConstants.ENEMY_BULLET_OFFSET_Y, GameConstants.ENEMY_BULLET_SPEED)
+        // Calculate vector from enemy to player
+        const playerX = this.player.x
+        const playerY = this.player.y
+
+        // Enemy bullet spawn point
+        const spawnX = enemy.x
+        const spawnY = enemy.y + GameConstants.ENEMY_BULLET_OFFSET_Y
+
+        const dx = playerX - spawnX
+        const dy = playerY - spawnY
+
+        // Normalize direction
+        const length = Math.sqrt(dx * dx + dy * dy)
+        let vx = 0
+        let vy = GameConstants.ENEMY_BULLET_SPEED
+
+        if (length !== 0) {
+            vx = (dx / length) * GameConstants.ENEMY_BULLET_SPEED
+            vy = (dy / length) * GameConstants.ENEMY_BULLET_SPEED
+        }
+
+        bullet.fire(spawnX, spawnY)
+
+
+        // Determine angle in radians to target (player)
+        // Phaser angles: 0 = right, PI/2 = down, PI = left, -PI/2 = up
+        // Enemy bullet is visually pointing 'down' by default (facing bottom edge).
+        // So, angle = atan2(targetY - startY, targetX - startX)
+        const angleRad = Math.atan2(vy, vx)
+
+        // Set rotation so that the bottom center is always the forward heading (down)
+        // Phaser sprites are by default rotated around center; anchor (origin) is 0.5, 0.5
+        // If you want rotation around bottom center, set origin to (0.5, 1)
+        // bullet.setOrigin(0.5, 1)
+        bullet.setRotation(angleRad + -(Math.PI / 2))
+        bullet.setVelocity(vx, vy)
     }
 
     getEnemies(): Phaser.Physics.Arcade.Group {

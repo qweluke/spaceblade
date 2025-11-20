@@ -5,8 +5,11 @@ export abstract class BaseBullet extends Physics.Arcade.Sprite {
     protected direction: 'up' | 'down'
     protected defaultVelocity: number
 
-    constructor(scene: Scene, x: number, y: number, direction: 'up' | 'down', defaultVelocity: number) {
-        super(scene, x, y, 'bulletTexture')
+    constructor(
+        scene: Scene, 
+        x: number, 
+        y: number, direction: 'up' | 'down', defaultVelocity: number, texture: string) {
+        super(scene, x, y, texture)
         this.direction = direction
         this.defaultVelocity = defaultVelocity
     }
