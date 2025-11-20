@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser'
 import { GameConstants } from '../gameConstants'
 import { getGameHeight, getGameWidth } from '../helpers/gameHelpers'
+import { GameState } from '../types/GameState'
 
 export class UIController {
     private scene: Phaser.Scene
@@ -90,33 +91,33 @@ export class UIController {
         this.setupListeners()
     }
 
-    showGameOverText(): void {
+    private showGameOverText(): void {
         this.gameOverText = this.createCenteredText(this.getCenterX(), this.getCenterY(), 'GAME OVER', {
             fontSize: '64px',
             color: '#ff0000',
         })
     }
 
-    showLevelCompleteText(): void {
+    private showLevelCompleteText(): void {
         this.levelCompleteText = this.createCenteredText(this.getCenterX(), this.getCenterY(), 'LEVEL CLEAR!', {
             fontSize: '48px',
             color: '#00ff00',
         })
     }
 
-    hideLevelCompleteText(): void {
+    private hideLevelCompleteText(): void {
         if (this.levelCompleteText) {
             this.levelCompleteText.destroy()
         }
     }
 
-    hideGameOverText(): void {
+    private hideGameOverText(): void {
         if (this.gameOverText) {
             this.gameOverText.destroy()
         }
     }
 
-    showCongratulationsText(): Phaser.GameObjects.Text {
+    private showCongratulationsText(): Phaser.GameObjects.Text {
         return this.createCenteredText(this.getCenterX(), this.getCenterY() + 60, 'GRATULACJE!', {
             fontSize: '48px',
             color: '#ffff00',
@@ -183,9 +184,10 @@ export class UIController {
         // Jeśli tego nie zrobisz, po restarcie gry stary UIManager (zombie) nadal będzie próbował zmieniać tekst!
         this.scene.registry.events.off('changedata-lives', this.updateLives, this)
         this.scene.registry.events.off('changedata-score', this.updateScore, this)
+        this.scene.registry.events.off('changedata-gameState', this.onGameStateChange, this)
     }
 
-    private onGameStateChange(_parent: unknown, newState: string) {
+    private onGameStateChange(_parent: unknown, newState: GameState) {
         // Ukrywamy wszystko na start (czyszczenie przed nowym stanem)
         this.hideLevelCompleteText()
         this.hideGameOverText()
@@ -193,15 +195,6 @@ export class UIController {
         switch (newState) {
             case 'LEVEL_COMPLETE':
                 this.showLevelCompleteText()
-                break
-
-            case 'GAME_OVER':
-                this.showGameOverText()
-                break
-
-            case 'PLAYING':
-                // Upewniamy się, że HUD jest widoczny, a napisy zniknęły
-                // this.showHUD()
                 break
         }
     }
