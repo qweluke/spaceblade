@@ -4,7 +4,7 @@ import { getGameHeight, getGameWidth } from './helpers/gameHelpers'
 // Definiujemy typy stanów, żeby kod był czytelniejszy
 type EnemyState = 'spawning' | 'inFormation' | 'attacking' | 'returning' | 'dead'
 
-const shotingSatates: readonly EnemyState[] = ['spawning', 'attacking', 'returning']
+const shotingSatates: readonly EnemyState[] = ['spawning', 'attacking']
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
     // Ścieżki i ruch
